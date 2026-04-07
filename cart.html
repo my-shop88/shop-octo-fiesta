@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>购物车 - 云商</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <!-- 头部 -->
+  <header class="header" id="header">
+    <div class="container">
+      <div class="header-inner">
+        <a href="index.html" class="logo">云商</a>
+        <nav class="nav" id="nav">
+          <ul class="nav-list">
+            <li><a href="index.html">首页</a></li>
+            <li><a href="products.html">商品列表</a></li>
+            <li><a href="category.html">分类</a></li>
+            <li><a href="about.html">关于我们</a></li>
+            <li><a href="contact.html">联系我们</a></li>
+          </ul>
+        </nav>
+        <div class="header-actions">
+          <a href="cart.html" class="cart-icon">
+            <svg viewBox="0 0 24 24" width="24" height="24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" fill="none" stroke="currentColor" stroke-width="2"/><line x1="3" y1="6" x2="21" y2="6" stroke="currentColor" stroke-width="2"/><path d="M16 10a4 4 0 01-8 0" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+            <span class="cart-badge" id="cartBadge">0</span>
+          </a>
+          <a href="login.html" class="user-icon">
+            <svg viewBox="0 0 24 24" width="24" height="24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="7" r="4" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主内容 -->
+  <main class="main-content" style="padding-top: 100px;">
+    <div class="container">
+      <h1 class="section-title">购物车</h1>
+      
+      <div class="cart-page">
+        <!-- 购物车商品列表 -->
+        <div class="cart-list" id="cartList"></div>
+        
+        <!-- 购物车侧边栏 -->
+        <div class="cart-summary">
+          <h3>订单摘要</h3>
+          <div class="summary-row">
+            <span>商品金额</span>
+            <span id="subtotal">¥0.00</span>
+          </div>
+          <div class="summary-row">
+            <span>运费</span>
+            <span id="shipping">¥0.00</span>
+          </div>
+          <div class="summary-row total">
+            <span>合计</span>
+            <span id="total">¥0.00</span>
+          </div>
+          <a href="checkout.html" class="btn btn-primary btn-block">去结算</a>
+          <p class="cart-tip">满99元免运费</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p>&copy; 2026 云商科技 版权所有</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      renderCartPage();
+    });
+
+    function renderCartPage() {
+      const container = document.getElementById('cartList');
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      
+      if (cart.length === 0) {
+        container.innerHTML = `
+          <div class="cart-empty" style="padding: 60px; text-align: center;">
+            <div style="font-size: 60px; margin-bottom: 20px;">🛒</div>
+            <h2 style="margin-bottom: 15px;">购物车是空的</h2>
+            <p style="color: #6b7280; margin-bottom: 30px;">快去挑选心仪的商品吧</p>
+            <a href="products.html" class="btn btn-primary">去购物</a>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = cart.map((item, index) => `
+        <div class="cart-item-page">
+          <div class="cart-item-img">
+            <img src="${item.image}" alt="${item.name}">
+          </div>
+          <div class="cart-item-details">
+            <h3>${item.name}</h3>
+            <p class="cart-item-brand">${item.brand}</p>
+            <p class="cart-item-price">¥${item.price}</p>
+          </div>
+          <div class="cart-item-actions">
+            <div class="qty-control">
+              <button onclick="updateCartQty(${index}, -1)">-</button>
+              <span>${item.qty}</span>
+              <button onclick="updateCartQty(${index}, 1)">+</button>
+            </div>
+            <button class="remove-btn" onclick="removeFromCart(${index})">删除</button>
+          </div>
+        </div>
+      `).join('');
+
+      updateCartSummary();
+    }
+
+    function updateCartSummary() {
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      const subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+      const shipping = subtotal >= 99 ? 0 : 10;
+      const total = subtotal + shipping;
+
+      document.getElementById('subtotal').textContent = `¥${subtotal.toFixed(2)}`;
+      document.getElementById('shipping').textContent = shipping === 0 ? '免运费' : `¥${shipping}`;
+      document.getElementById('total').textContent = `¥${total.toFixed(2)}`;
+    }
+
+    // 重写购物车相关函数
+    function renderCartItems() {
+      renderCartPage();
+    }
+
+    function saveCart() {
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      updateCartBadge();
+    }
+  </script>
+</body>
+</html>
