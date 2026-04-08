@@ -1,168 +1,70 @@
-// ===== 商品数据 =====
-const products = [
-  {
-    id: 1,
-    name: 'iPhone 15 Pro Max 256GB',
-    brand: 'Apple',
-    price: 9999,
-    originalPrice: 11999,
-    image: 'https://images.unsplash.com/photo-1695043133143-2e7c535f1e0d?w=400&q=80',
-    category: 'electronics',
-    tag: 'hot',
-    description: 'A17 Pro芯片，钛金属设计，专业相机系统',
-    stock: 50
-  },
-  {
-    id: 2,
-    name: 'MacBook Pro 14英寸 M3',
-    brand: 'Apple',
-    price: 15999,
-    originalPrice: null,
-    image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&q=80',
-    category: 'electronics',
-    tag: 'new',
-    description: 'M3 Pro芯片，Liquid Retina XDR显示屏',
-    stock: 30
-  },
-  {
-    id: 3,
-    name: 'Nike Air Max 90 运动鞋',
-    brand: 'Nike',
-    price: 699,
-    originalPrice: 899,
-    image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=80',
-    category: 'sports',
-    tag: 'sale',
-    description: '经典设计，舒适缓震，透气网面',
-    stock: 100
-  },
-  {
-    id: 4,
-    name: 'Adidas Ultraboost 22',
-    brand: 'Adidas',
-    price: 899,
-    originalPrice: 1199,
-    image: 'https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=400&q=80',
-    category: 'sports',
-    tag: 'sale',
-    description: 'Boost中底，Primeknit鞋面，极致舒适',
-    stock: 80
-  },
-  {
-    id: 5,
-    name: 'SK-II 神仙水精华液 230ml',
-    brand: 'SK-II',
-    price: 1590,
-    originalPrice: null,
-    image: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=400&q=80',
-    category: 'beauty',
-    tag: 'new',
-    description: 'PITERA™成分，深层护肤，焕活肌肤',
-    stock: 45
-  },
-  {
-    id: 6,
-    name: '戴森 V15 吸尘器',
-    brand: 'Dyson',
-    price: 4990,
-    originalPrice: 5990,
-    image: 'https://images.unsplash.com/photo-1558317374-067fb5f30001?w=400&q=80',
-    category: 'home',
-    tag: 'sale',
-    description: '强劲吸力，智能感应，激光除尘',
-    stock: 25
-  },
-  {
-    id: 7,
-    name: 'AirPods Pro 第二代',
-    brand: 'Apple',
-    price: 1899,
-    originalPrice: 1999,
-    image: 'https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?w=400&q=80',
-    category: 'electronics',
-    tag: 'hot',
-    description: '主动降噪，空间音频，MagSafe充电盒',
-    stock: 120
-  },
-  {
-    id: 8,
-    name: '索尼 WH-1000XM5 耳机',
-    brand: 'Sony',
-    price: 2499,
-    originalPrice: 2799,
-    image: 'https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?w=400&q=80',
-    category: 'electronics',
-    tag: 'sale',
-    description: '业界领先降噪，30小时续航，LDAC音质',
-    stock: 60
-  },
-  {
-    id: 9,
-    name: '华为 Mate 60 Pro',
-    brand: 'Huawei',
-    price: 6999,
-    originalPrice: null,
-    image: 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=400&q=80',
-    category: 'electronics',
-    tag: 'new',
-    description: '麒麟9000s芯片，卫星通信，超光变XMAGE',
-    stock: 40
-  },
-  {
-    id: 10,
-    name: '小米电视 ES70',
-    brand: 'Xiaomi',
-    price: 3999,
-    originalPrice: 4599,
-    image: 'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=400&q=80',
-    category: 'electronics',
-    tag: 'sale',
-    description: '4K量子点屏，多分区背光，MEMC运动补偿',
-    stock: 35
-  },
-  {
-    id: 11,
-    name: '优衣库 纯棉T恤',
-    brand: 'UNIQLO',
-    price: 79,
-    originalPrice: null,
-    image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&q=80',
-    category: 'clothing',
-    tag: null,
-    description: '100%纯棉，舒适透气，多色可选',
-    stock: 200
-  },
-  {
-    id: 12,
-    name: '宜家 简约书桌',
-    brand: 'IKEA',
-    price: 599,
-    originalPrice: 799,
-    image: 'https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=400&q=80',
-    category: 'home',
-    tag: 'sale',
-    description: '北欧设计，实用收纳，易于安装',
-    stock: 55
-  }
-];
+/**
+ * 云商前端主脚本 - API版本
+ * 商品数据从后端获取，购物车使用 API.Cart 模块
+ */
 
 // ===== 全局变量 =====
-let cart = JSON.parse(localStorage.getItem('cart')) || [];
+let products = [];
 let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
 let currentFilter = 'all';
 
 // ===== 初始化 =====
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
   initSlider();
   initMobileMenu();
   initCart();
   initBackToTop();
   initScrollEffects();
+  initUserUI();
   
+  // 加载商品数据
   if (document.getElementById('productGrid')) {
-    renderProducts();
+    await loadProducts();
   }
 });
+
+// ===== 加载商品数据 =====
+async function loadProducts() {
+  try {
+    const result = await API.Product.getList();
+    if (result.success) {
+      products = result.data.map(p => ({
+        id: p.id,
+        name: p.name,
+        brand: p.category,
+        price: p.price,
+        originalPrice: p.original_price,
+        image: p.images && p.images[0] ? p.images[0] : 'https://via.placeholder.com/400x400?text=No+Image',
+        category: p.category,
+        tag: p.original_price ? 'sale' : null,
+        description: p.description,
+        stock: p.stock
+      }));
+      renderProducts();
+    }
+  } catch (error) {
+    console.error('加载商品失败:', error);
+    showToast('商品加载失败，请刷新重试', 'error');
+  }
+}
+
+// ===== 用户UI初始化 =====
+function initUserUI() {
+  const user = API.User.getCurrentUser();
+  const userIcon = document.querySelector('.user-icon');
+  
+  if (user && userIcon) {
+    userIcon.href = '#';
+    userIcon.title = `已登录: ${user.username}`;
+    userIcon.onclick = (e) => {
+      e.preventDefault();
+      if (confirm('是否退出登录？')) {
+        API.User.logout();
+        window.location.reload();
+      }
+    };
+  }
+}
 
 // ===== 轮播 =====
 function initSlider() {
@@ -174,17 +76,20 @@ function initSlider() {
   const prevBtn = document.getElementById('prevSlide');
   const nextBtn = document.getElementById('nextSlide');
   
+  if (!slides.length) return;
+  
   let currentSlide = 0;
   let autoSlide;
   
   // 创建指示点
-  slides.forEach((_, index) => {
-    const dot = document.createElement('span');
-    dot.addEventListener('click', () => goToSlide(index));
-    dots.appendChild(dot);
-  });
-  
-  updateDots();
+  if (dots) {
+    slides.forEach((_, index) => {
+      const dot = document.createElement('span');
+      dot.addEventListener('click', () => goToSlide(index));
+      dots.appendChild(dot);
+    });
+    updateDots();
+  }
   
   function goToSlide(index) {
     slides[currentSlide].classList.remove('active');
@@ -194,6 +99,7 @@ function initSlider() {
   }
   
   function updateDots() {
+    if (!dots) return;
     dots.querySelectorAll('span').forEach((dot, index) => {
       dot.classList.toggle('active', index === currentSlide);
     });
@@ -203,8 +109,13 @@ function initSlider() {
     goToSlide(currentSlide + 1);
   }
   
-  prevBtn.addEventListener('click', () => goToSlide(currentSlide - 1));
-  nextBtn.addEventListener('click', nextSlide);
+  if (prevBtn) {
+    prevBtn.addEventListener('click', () => goToSlide(currentSlide - 1));
+  }
+  
+  if (nextBtn) {
+    nextBtn.addEventListener('click', nextSlide);
+  }
   
   autoSlide = setInterval(nextSlide, 5000);
   
@@ -227,7 +138,7 @@ function initMobileMenu() {
 
 // ===== 购物车 =====
 function initCart() {
-  updateCartBadge();
+  // 购物车角标由 api.js 自动更新
   
   const cartIcon = document.querySelector('.cart-icon');
   const cartSidebar = document.getElementById('cartSidebar');
@@ -251,19 +162,25 @@ function initCart() {
 }
 
 function openCart() {
-  document.getElementById('cartSidebar').classList.add('active');
-  document.getElementById('cartOverlay').classList.add('active');
+  const sidebar = document.getElementById('cartSidebar');
+  const overlay = document.getElementById('cartOverlay');
+  if (sidebar) sidebar.classList.add('active');
+  if (overlay) overlay.classList.add('active');
   renderCartItems();
 }
 
 function closeCart() {
-  document.getElementById('cartSidebar').classList.remove('active');
-  document.getElementById('cartOverlay').classList.remove('active');
+  const sidebar = document.getElementById('cartSidebar');
+  const overlay = document.getElementById('cartOverlay');
+  if (sidebar) sidebar.classList.remove('active');
+  if (overlay) overlay.classList.remove('active');
 }
 
 function renderCartItems() {
   const container = document.getElementById('cartItems');
   if (!container) return;
+  
+  const cart = API.Cart.getCart();
   
   if (cart.length === 0) {
     container.innerHTML = `
@@ -275,7 +192,7 @@ function renderCartItems() {
     return;
   }
   
-  container.innerHTML = cart.map((item, index) => `
+  container.innerHTML = cart.map(item => `
     <div class="cart-item">
       <div class="cart-item-image">
         <img src="${item.image}" alt="${item.name}">
@@ -284,11 +201,11 @@ function renderCartItems() {
         <h4 class="cart-item-title">${item.name}</h4>
         <p class="cart-item-price">¥${item.price.toFixed(2)}</p>
         <div class="cart-item-qty">
-          <button onclick="updateCartQty(${index}, -1)">-</button>
+          <button onclick="updateCartQty(${item.id}, ${item.qty - 1})">-</button>
           <span>${item.qty}</span>
-          <button onclick="updateCartQty(${index}, 1)">+</button>
+          <button onclick="updateCartQty(${item.id}, ${item.qty + 1})">+</button>
         </div>
-        <button class="cart-item-remove" onclick="removeFromCart(${index})">删除</button>
+        <button class="cart-item-remove" onclick="removeFromCart(${item.id})">删除</button>
       </div>
     </div>
   `).join('');
@@ -300,52 +217,30 @@ function addToCart(productId) {
   const product = products.find(p => p.id === productId);
   if (!product) return;
   
-  const existingItem = cart.find(item => item.id === productId);
+  API.Cart.addItem({
+    id: product.id,
+    name: product.name,
+    price: product.price,
+    image: product.image,
+    brand: product.brand
+  });
   
-  if (existingItem) {
-    existingItem.qty++;
-  } else {
-    cart.push({ ...product, qty: 1 });
-  }
-  
-  saveCart();
   showToast('已添加到购物车');
 }
 
-function updateCartQty(index, delta) {
-  cart[index].qty += delta;
-  
-  if (cart[index].qty <= 0) {
-    cart.splice(index, 1);
-  }
-  
-  saveCart();
+function updateCartQty(productId, qty) {
+  API.Cart.updateQty(productId, qty);
   renderCartItems();
 }
 
-function removeFromCart(index) {
-  cart.splice(index, 1);
-  saveCart();
+function removeFromCart(productId) {
+  API.Cart.removeItem(productId);
   renderCartItems();
   showToast('已从购物车移除');
 }
 
-function saveCart() {
-  localStorage.setItem('cart', JSON.stringify(cart));
-  updateCartBadge();
-}
-
-function updateCartBadge() {
-  const badge = document.getElementById('cartBadge');
-  if (badge) {
-    const total = cart.reduce((sum, item) => sum + item.qty, 0);
-    badge.textContent = total;
-    badge.style.display = total > 0 ? 'block' : 'none';
-  }
-}
-
 function updateCartTotal() {
-  const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+  const total = API.Cart.getTotal();
   const totalEl = document.getElementById('cartTotal');
   if (totalEl) {
     totalEl.textContent = `¥${total.toFixed(2)}`;
@@ -393,6 +288,11 @@ function renderProducts(filter = 'all') {
   
   if (filter !== 'all') {
     filteredProducts = products.filter(p => p.category === filter);
+  }
+  
+  if (filteredProducts.length === 0) {
+    grid.innerHTML = '<p style="text-align: center; padding: 40px; color: #999;">暂无商品</p>';
+    return;
   }
   
   grid.innerHTML = filteredProducts.map(product => `
@@ -448,7 +348,7 @@ function toggleWishlist(productId) {
 }
 
 // ===== Toast =====
-function showToast(message) {
+function showToast(message, type = 'success') {
   let toast = document.querySelector('.toast');
   
   if (!toast) {
@@ -458,9 +358,20 @@ function showToast(message) {
   }
   
   toast.textContent = message;
-  toast.classList.add('show');
+  toast.className = `toast ${type} show`;
   
   setTimeout(() => {
     toast.classList.remove('show');
   }, 2500);
+}
+
+// ===== 商品筛选 =====
+function filterProducts(category) {
+  currentFilter = category;
+  renderProducts(category);
+  
+  // 更新筛选按钮状态
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.category === category);
+  });
 }

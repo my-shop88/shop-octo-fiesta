@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>我的订单 - 云商</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <style>
+    .orders-page { padding-top: 100px; min-height: 100vh; background: #f5f5f5; }
+    .orders-container { max-width: 900px; margin: 0 auto; padding: 20px; }
+    .orders-header { background: white; border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+    .orders-header h1 { font-size: 24px; margin-bottom: 20px; }
+    .order-tabs { display: flex; gap: 10px; flex-wrap: wrap; }
+    .order-tab { padding: 8px 20px; border-radius: 20px; border: 1px solid #e5e7eb; background: white; cursor: pointer; font-size: 14px; transition: all 0.3s; }
+    .order-tab:hover { background: #f9fafb; }
+    .order-tab.active { background: var(--primary); color: white; border-color: var(--primary); }
+    .order-list { display: flex; flex-direction: column; gap: 15px; }
+    .order-card { background: white; border-radius: 12px; padding: 20px; }
+    .order-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #f3f4f6; }
+    .order-id { font-size: 14px; color: #6b7280; }
+    .order-status { padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+    .status-pending { background: #fef3c7; color: #92400e; }
+    .status-paid { background: #d1fae5; color: #065f46; }
+    .status-shipped { background: #dbeafe; color: #1e40af; }
+    .status-delivered { background: #e0e7ff; color: #3730a3; }
+    .status-cancelled { background: #fee2e2; color: #991b1b; }
+    .order-items { margin-bottom: 15px; }
+    .order-item { display: flex; gap: 15px; padding: 12px 0; border-bottom: 1px solid #f9fafb; }
+    .order-item:last-child { border-bottom: none; }
+    .order-item-img { width: 80px; height: 80px; border-radius: 8px; overflow: hidden; flex-shrink: 0; }
+    .order-item-img img { width: 100%; height: 100%; object-fit: cover; }
+    .order-item-info { flex: 1; }
+    .order-item-name { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+    .order-item-spec { font-size: 12px; color: #6b7280; }
+    .order-item-price { text-align: right; }
+    .order-item-price .price { font-size: 14px; font-weight: 600; color: var(--primary); }
+    .order-item-price .qty { font-size: 12px; color: #6b7280; }
+    .order-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 15px; border-top: 1px solid #f3f4f6; }
+    .order-total { font-size: 14px; }
+    .order-total span { font-size: 18px; font-weight: 600; color: var(--primary); }
+    .order-actions { display: flex; gap: 10px; }
+    .order-actions button { padding: 8px 20px; border-radius: 6px; border: 1px solid #e5e7eb; background: white; font-size: 13px; cursor: pointer; transition: all 0.3s; }
+    .order-actions button:hover { background: #f9fafb; }
+    .order-actions .btn-primary { background: var(--primary); color: white; border-color: var(--primary); }
+    .order-actions .btn-primary:hover { background: var(--primary-dark); }
+    .empty-orders { text-align: center; padding: 80px 20px; }
+    .empty-orders-icon { font-size: 80px; margin-bottom: 20px; }
+    .empty-orders h2 { font-size: 20px; margin-bottom: 10px; color: #374151; }
+    .empty-orders p { color: #6b7280; margin-bottom: 30px; }
+    .loading { text-align: center; padding: 60px; }
+    .loading-spinner { width: 40px; height: 40px; border: 3px solid #f3f4f6; border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: #333; color: white; padding: 12px 24px; border-radius: 8px; font-size: 14px; opacity: 0; transition: all 0.3s; z-index: 9999; }
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    .toast.success { background: #10b981; }
+    .toast.error { background: #ef4444; }
+  </style>
+</head>
+<body>
+  <!-- 头部 -->
+  <header class="header" id="header">
+    <div class="container">
+      <div class="header-inner">
+        <a href="index.html" class="logo">云商</a>
+        <nav class="nav" id="nav">
+          <ul class="nav-list">
+            <li><a href="index.html">首页</a></li>
+            <li><a href="products.html">商品列表</a></li>
+            <li><a href="category.html">分类</a></li>
+            <li><a href="about.html">关于我们</a></li>
+            <li><a href="contact.html">联系我们</a></li>
+          </ul>
+        </nav>
+        <div class="header-actions">
+          <a href="cart.html" class="cart-icon">
+            <svg viewBox="0 0 24 24" width="24" height="24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" fill="none" stroke="currentColor" stroke-width="2"/><line x1="3" y1="6" x2="21" y2="6" stroke="currentColor" stroke-width="2"/><path d="M16 10a4 4 0 01-8 0" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+            <span class="cart-badge" id="cartBadge">0</span>
+          </a>
+          <a href="login.html" class="user-icon" id="userIcon">
+            <svg viewBox="0 0 24 24" width="24" height="24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="7" r="4" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主内容 -->
+  <main class="orders-page">
+    <div class="orders-container">
+      <div class="orders-header">
+        <h1>我的订单</h1>
+        <div class="order-tabs">
+          <button class="order-tab active" data-status="all" onclick="filterOrders('all')">全部</button>
+          <button class="order-tab" data-status="pending" onclick="filterOrders('pending')">待付款</button>
+          <button class="order-tab" data-status="paid" onclick="filterOrders('paid')">待发货</button>
+          <button class="order-tab" data-status="shipped" onclick="filterOrders('shipped')">待收货</button>
+          <button class="order-tab" data-status="delivered" onclick="filterOrders('delivered')">已完成</button>
+        </div>
+      </div>
+
+      <div class="order-list" id="orderList">
+        <div class="loading">
+          <div class="loading-spinner"></div>
+          <p>加载中...</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p>&copy; 2026 云商科技 版权所有</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script>
+    let currentFilter = 'all';
+    let orders = [];
+
+    // 检查登录状态
+    function checkLogin() {
+      if (!API.User.isLoggedIn()) {
+        showToast('请先登录', 'error');
+        setTimeout(() => {
+          window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.href);
+        }, 1500);
+        return false;
+      }
+      
+      const user = API.User.getCurrentUser();
+      const userIcon = document.getElementById('userIcon');
+      if (user && userIcon) {
+        userIcon.href = '#';
+        userIcon.title = `已登录: ${user.username}`;
+        userIcon.onclick = (e) => {
+          e.preventDefault();
+          if (confirm('是否退出登录？')) {
+            API.User.logout();
+            window.location.href = 'index.html';
+          }
+        };
+      }
+      return true;
+    }
+
+    // 加载订单列表
+    async function loadOrders() {
+      try {
+        const result = await API.Order.getList();
+        if (result.success) {
+          orders = result.data || [];
+          renderOrders();
+        } else {
+          document.getElementById('orderList').innerHTML = `
+            <div class="empty-orders">
+              <div class="empty-orders-icon">📦</div>
+              <h2>加载失败</h2>
+              <p>${result.message || '请稍后重试'}</p>
+            </div>
+          `;
+        }
+      } catch (error) {
+        console.error('加载订单失败:', error);
+        document.getElementById('orderList').innerHTML = `
+          <div class="empty-orders">
+            <div class="empty-orders-icon">📦</div>
+            <h2>加载失败</h2>
+            <p>网络错误，请检查连接后重试</p>
+          </div>
+        `;
+      }
+    }
+
+    // 渲染订单列表
+    function renderOrders() {
+      const container = document.getElementById('orderList');
+      
+      let filteredOrders = orders;
+      if (currentFilter !== 'all') {
+        filteredOrders = orders.filter(o => o.status === currentFilter);
+      }
+
+      if (filteredOrders.length === 0) {
+        const statusText = {
+          'all': '暂无订单',
+          'pending': '暂无待付款订单',
+          'paid': '暂无待发货订单',
+          'shipped': '暂无待收货订单',
+          'delivered': '暂无已完成订单'
+        };
+        container.innerHTML = `
+          <div class="empty-orders">
+            <div class="empty-orders-icon">📦</div>
+            <h2>${statusText[currentFilter]}</h2>
+            <p>快去选购心仪的商品吧</p>
+            <a href="products.html" class="btn btn-primary" style="margin-top: 20px;">去购物</a>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filteredOrders.map(order => `
+        <div class="order-card">
+          <div class="order-header">
+            <span class="order-id">订单号：${order.order_no}</span>
+            <span class="order-status status-${order.status}">${getStatusText(order.status)}</span>
+          </div>
+          <div class="order-items">
+            ${(order.items || []).map(item => `
+              <div class="order-item">
+                <div class="order-item-img">
+                  <img src="${item.image || 'https://via.placeholder.com/80x80?text=No+Image'}" alt="${item.name}">
+                </div>
+                <div class="order-item-info">
+                  <div class="order-item-name">${item.name}</div>
+                  <div class="order-item-spec">数量: ${item.quantity}</div>
+                </div>
+                <div class="order-item-price">
+                  <div class="price">¥${item.price}</div>
+                  <div class="qty">x${item.quantity}</div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+          <div class="order-footer">
+            <div class="order-total">
+              共${(order.items || []).reduce((sum, i) => sum + i.quantity, 0)}件商品 
+              合计：<span>¥${order.total_amount}</span>
+            </div>
+            <div class="order-actions">
+              ${getOrderActions(order)}
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // 获取状态文本
+    function getStatusText(status) {
+      const statusMap = {
+        'pending': '待付款',
+        'paid': '待发货',
+        'shipped': '待收货',
+        'delivered': '已完成',
+        'cancelled': '已取消'
+      };
+      return statusMap[status] || status;
+    }
+
+    // 获取订单操作按钮
+    function getOrderActions(order) {
+      const actions = [];
+      
+      if (order.status === 'pending') {
+        actions.push(`<button class="btn-primary" onclick="payOrder('${order.id}')">立即付款</button>`);
+        actions.push(`<button onclick="cancelOrder('${order.id}')">取消订单</button>`);
+      } else if (order.status === 'shipped') {
+        actions.push(`<button class="btn-primary" onclick="confirmReceive('${order.id}')">确认收货</button>`);
+        actions.push(`<button onclick="viewLogistics('${order.id}')">查看物流</button>`);
+      } else if (order.status === 'delivered') {
+        actions.push(`<button onclick="viewDetail('${order.id}')">查看详情</button>`);
+      } else {
+        actions.push(`<button onclick="viewDetail('${order.id}')">查看详情</button>`);
+      }
+      
+      return actions.join('');
+    }
+
+    // 筛选订单
+    function filterOrders(status) {
+      currentFilter = status;
+      
+      // 更新标签样式
+      document.querySelectorAll('.order-tab').forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.status === status);
+      });
+      
+      renderOrders();
+    }
+
+    // 支付订单
+    function payOrder(orderId) {
+      alert('支付功能开发中，订单号: ' + orderId);
+    }
+
+    // 取消订单
+    async function cancelOrder(orderId) {
+      if (!confirm('确定要取消此订单吗？')) return;
+      
+      try {
+        const result = await API.Order.cancel(orderId);
+        if (result.success) {
+          showToast('订单已取消', 'success');
+          loadOrders();
+        } else {
+          showToast(result.message || '取消失败', 'error');
+        }
+      } catch (error) {
+        showToast('取消失败，请重试', 'error');
+      }
+    }
+
+    // 确认收货
+    async function confirmReceive(orderId) {
+      if (!confirm('确认已收到商品？')) return;
+      
+      try {
+        const result = await API.Order.confirmReceive(orderId);
+        if (result.success) {
+          showToast('确认收货成功', 'success');
+          loadOrders();
+        } else {
+          showToast(result.message || '操作失败', 'error');
+        }
+      } catch (error) {
+        showToast('操作失败，请重试', 'error');
+      }
+    }
+
+    // 查看物流
+    function viewLogistics(orderId) {
+      alert('物流查询功能开发中，订单号: ' + orderId);
+    }
+
+    // 查看详情
+    function viewDetail(orderId) {
+      window.location.href = `order-detail.html?id=${orderId}`;
+    }
+
+    // Toast 提示
+    function showToast(message, type = 'info') {
+      let toast = document.querySelector('.toast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.className = 'toast';
+        document.body.appendChild(toast);
+      }
+      
+      toast.textContent = message;
+      toast.className = `toast ${type} show`;
+      
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+
+    // 页面加载
+    document.addEventListener('DOMContentLoaded', function() {
+      if (checkLogin()) {
+        loadOrders();
+      }
+    });
+  </script>
+</body>
+</html>

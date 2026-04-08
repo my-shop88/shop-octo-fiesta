@@ -20,6 +20,7 @@
     .form-options a { color: var(--primary); }
     .login-btn { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: var(--transition); }
     .login-btn:hover { background: var(--primary-dark); }
+    .login-btn:disabled { background: #ccc; cursor: not-allowed; }
     .login-divider { text-align: center; margin: 25px 0; color: var(--gray); font-size: 13px; position: relative; }
     .login-divider::before, .login-divider::after { content: ''; position: absolute; top: 50%; width: 40%; height: 1px; background: var(--border); }
     .login-divider::before { left: 0; }
@@ -29,45 +30,227 @@
     .social-btn:hover { border-color: var(--primary); }
     .login-footer { text-align: center; margin-top: 25px; font-size: 14px; }
     .login-footer a { color: var(--primary); font-weight: 500; }
+    .error-msg { color: #ef4444; font-size: 13px; margin-top: 5px; display: none; }
+    .error-msg.show { display: block; }
+    .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: #333; color: white; padding: 12px 24px; border-radius: 8px; font-size: 14px; opacity: 0; transition: all 0.3s; z-index: 9999; }
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    .toast.success { background: #10b981; }
+    .toast.error { background: #ef4444; }
+    .tab-switch { display: flex; margin-bottom: 25px; border-bottom: 2px solid var(--border); }
+    .tab-switch button { flex: 1; padding: 12px; background: none; border: none; font-size: 16px; cursor: pointer; position: relative; }
+    .tab-switch button.active { color: var(--primary); font-weight: 600; }
+    .tab-switch button.active::after { content: ''; position: absolute; bottom: -2px; left: 0; right: 0; height: 2px; background: var(--primary); }
   </style>
 </head>
 <body>
   <div class="login-page">
     <div class="login-container">
       <div class="login-header">
-        <h1>欢迎回来</h1>
-        <p>登录您的云商账号</p>
+        <h1 id="pageTitle">欢迎回来</h1>
+        <p id="pageSubtitle">登录您的云商账号</p>
       </div>
+
+      <div class="tab-switch">
+        <button class="active" onclick="switchTab('login')">登录</button>
+        <button onclick="switchTab('register')">注册</button>
+      </div>
+
+      <!-- 登录表单 -->
       <form id="loginForm">
         <div class="form-group">
-          <label>手机号 / 邮箱</label>
-          <input type="text" placeholder="请输入手机号或邮箱" required>
+          <label>用户名 / 邮箱</label>
+          <input type="text" id="loginUsername" placeholder="请输入用户名或邮箱" required>
         </div>
         <div class="form-group">
           <label>密码</label>
-          <input type="password" placeholder="请输入密码" required>
+          <input type="password" id="loginPassword" placeholder="请输入密码" required>
         </div>
         <div class="form-options">
-          <label><input type="checkbox"> 记住我</label>
-          <a href="forgot.html">忘记密码？</a>
+          <label><input type="checkbox" id="rememberMe"> 记住我</label>
+          <a href="#" onclick="showToast('功能开发中', 'info')">忘记密码？</a>
         </div>
-        <button type="submit" class="login-btn">登录</button>
+        <button type="submit" class="login-btn" id="loginBtn">登录</button>
       </form>
-      <div class="login-divider">或</div>
-      <div class="social-login">
-        <button class="social-btn">📱 微信</button>
-        <button class="social-btn">🔵 QQ</button>
-      </div>
+
+      <!-- 注册表单 -->
+      <form id="registerForm" style="display: none;">
+        <div class="form-group">
+          <label>用户名</label>
+          <input type="text" id="regUsername" placeholder="请输入用户名" required>
+          <p class="error-msg" id="usernameError">用户名不能为空</p>
+        </div>
+        <div class="form-group">
+          <label>邮箱</label>
+          <input type="email" id="regEmail" placeholder="请输入邮箱" required>
+          <p class="error-msg" id="emailError">请输入有效的邮箱地址</p>
+        </div>
+        <div class="form-group">
+          <label>密码</label>
+          <input type="password" id="regPassword" placeholder="请输入密码（至少6位）" required minlength="6">
+          <p class="error-msg" id="passwordError">密码至少6位</p>
+        </div>
+        <div class="form-group">
+          <label>手机号（选填）</label>
+          <input type="tel" id="regPhone" placeholder="请输入手机号">
+        </div>
+        <button type="submit" class="login-btn" id="registerBtn">注册</button>
+      </form>
+
       <div class="login-footer">
-        还没有账号？<a href="register.html">立即注册</a>
+        <span id="footerText">还没有账号？</span>
+        <a href="#" id="footerLink" onclick="switchTab('register')">立即注册</a>
       </div>
     </div>
   </div>
+
+  <script src="js/api.js"></script>
   <script>
-    document.getElementById('loginForm').addEventListener('submit', function(e) {
+    let currentTab = 'login';
+
+    function switchTab(tab) {
+      currentTab = tab;
+      document.querySelectorAll('.tab-switch button').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent === (tab === 'login' ? '登录' : '注册'));
+      });
+
+      if (tab === 'login') {
+        document.getElementById('loginForm').style.display = 'block';
+        document.getElementById('registerForm').style.display = 'none';
+        document.getElementById('pageTitle').textContent = '欢迎回来';
+        document.getElementById('pageSubtitle').textContent = '登录您的云商账号';
+        document.getElementById('footerText').textContent = '还没有账号？';
+        document.getElementById('footerLink').textContent = '立即注册';
+        document.getElementById('footerLink').onclick = () => switchTab('register');
+      } else {
+        document.getElementById('loginForm').style.display = 'none';
+        document.getElementById('registerForm').style.display = 'block';
+        document.getElementById('pageTitle').textContent = '创建账号';
+        document.getElementById('pageSubtitle').textContent = '注册成为云商会员';
+        document.getElementById('footerText').textContent = '已有账号？';
+        document.getElementById('footerLink').textContent = '立即登录';
+        document.getElementById('footerLink').onclick = () => switchTab('login');
+      }
+    }
+
+    // 登录表单提交
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
       e.preventDefault();
-      alert('登录成功！欢迎回来～');
-      window.location.href = 'index.html';
+      
+      const btn = document.getElementById('loginBtn');
+      btn.disabled = true;
+      btn.textContent = '登录中...';
+
+      try {
+        const result = await API.User.login({
+          username: document.getElementById('loginUsername').value,
+          password: document.getElementById('loginPassword').value
+        });
+
+        if (result.success) {
+          showToast('登录成功！欢迎回来～', 'success');
+          
+          // 记住我
+          if (document.getElementById('rememberMe').checked) {
+            localStorage.setItem('rememberUser', document.getElementById('loginUsername').value);
+          }
+          
+          setTimeout(() => {
+            window.location.href = 'index.html';
+          }, 1000);
+        }
+      } catch (error) {
+        showToast(error.message || '登录失败，请检查用户名和密码', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '登录';
+      }
+    });
+
+    // 注册表单提交
+    document.getElementById('registerForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      // 验证
+      const username = document.getElementById('regUsername').value.trim();
+      const email = document.getElementById('regEmail').value.trim();
+      const password = document.getElementById('regPassword').value;
+      const phone = document.getElementById('regPhone').value.trim();
+
+      let hasError = false;
+
+      if (!username) {
+        document.getElementById('usernameError').classList.add('show');
+        hasError = true;
+      } else {
+        document.getElementById('usernameError').classList.remove('show');
+      }
+
+      if (!email || !email.includes('@')) {
+        document.getElementById('emailError').classList.add('show');
+        hasError = true;
+      } else {
+        document.getElementById('emailError').classList.remove('show');
+      }
+
+      if (password.length < 6) {
+        document.getElementById('passwordError').classList.add('show');
+        hasError = true;
+      } else {
+        document.getElementById('passwordError').classList.remove('show');
+      }
+
+      if (hasError) return;
+
+      const btn = document.getElementById('registerBtn');
+      btn.disabled = true;
+      btn.textContent = '注册中...';
+
+      try {
+        const result = await API.User.register({
+          username,
+          email,
+          password,
+          phone
+        });
+
+        if (result.success) {
+          showToast('注册成功！自动登录中...', 'success');
+          setTimeout(() => {
+            window.location.href = 'index.html';
+          }, 1500);
+        }
+      } catch (error) {
+        showToast(error.message || '注册失败，请稍后重试', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '注册';
+      }
+    });
+
+    // Toast 提示
+    function showToast(message, type = 'info') {
+      let toast = document.querySelector('.toast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.className = 'toast';
+        document.body.appendChild(toast);
+      }
+      
+      toast.textContent = message;
+      toast.className = `toast ${type} show`;
+      
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+
+    // 页面加载时检查是否记住用户
+    document.addEventListener('DOMContentLoaded', function() {
+      const remembered = localStorage.getItem('rememberUser');
+      if (remembered) {
+        document.getElementById('loginUsername').value = remembered;
+        document.getElementById('rememberMe').checked = true;
+      }
     });
   </script>
 </body>

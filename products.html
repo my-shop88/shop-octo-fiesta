@@ -151,18 +151,152 @@
   </div>
   <div class="cart-overlay" id="cartOverlay"></div>
 
+  <script src="js/api.js"></script>
   <script src="js/main.js"></script>
   <script>
-    // 筛选功能
+    let allProducts = [];
+    let currentCategory = 'all';
+    let currentSort = 'default';
+
+    // 加载商品
+    async function loadProductList() {
+      try {
+        const result = await API.Product.getList({ limit: 50 });
+        if (result.success) {
+          allProducts = result.data.map(p => ({
+            id: p.id,
+            name: p.name,
+            brand: p.category,
+            price: p.price,
+            originalPrice: p.original_price,
+            image: p.images && p.images[0] ? p.images[0] : 'https://via.placeholder.com/400x400?text=No+Image',
+            category: p.category,
+            tag: p.original_price ? 'sale' : null,
+            description: p.description,
+            stock: p.stock
+          }));
+          renderProductList();
+        }
+      } catch (error) {
+        document.getElementById('productGrid').innerHTML = '<p style="text-align:center;padding:40px;color:#999;">商品加载失败，请刷新重试</p>';
+      }
+    }
+
+    // 渲染商品列表
+    function renderProductList() {
+      let filtered = allProducts;
+      
+      if (currentCategory !== 'all') {
+        filtered = filtered.filter(p => p.category === currentCategory);
+      }
+
+      // 排序
+      if (currentSort === 'price-asc') {
+        filtered.sort((a, b) => a.price - b.price);
+      } else if (currentSort === 'price-desc') {
+        filtered.sort((a, b) => b.price - a.price);
+      }
+
+      const grid = document.getElementById('productGrid');
+      if (!grid) return;
+
+      if (filtered.length === 0) {
+        grid.innerHTML = '<p style="text-align:center;padding:40px;color:#999;">暂无该分类商品</p>';
+        return;
+      }
+
+      grid.innerHTML = filtered.map(product => `
+        <div class="product-card">
+          <div class="product-image">
+            <img src="${product.image}" alt="${product.name}" loading="lazy">
+            ${product.tag ? `<span class="product-tag tag-${product.tag}">${getTagText(product.tag)}</span>` : ''}
+            <div class="product-actions">
+              <button class="btn-add-cart" onclick="addToCart(${product.id})">加入购物车</button>
+            </div>
+          </div>
+          <div class="product-info">
+            <p class="product-brand">${product.brand}</p>
+            <h3 class="product-title">${product.name}</h3>
+            <div class="product-price">
+              <span class="price-current">¥${product.price}</span>
+              ${product.originalPrice ? `<span class="price-original">¥${product.originalPrice}</span>` : ''}
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function getTagText(tag) {
+      return { 'new': '新品', 'hot': '热门', 'sale': '特惠' }[tag] || '';
+    }
+
+    function addToCart(productId) {
+      const product = allProducts.find(p => p.id === productId);
+      if (!product) return;
+      API.Cart.addItem({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.image,
+        brand: product.brand
+      });
+      showToast('已添加到购物车');
+    }
+
+    function showToast(message, type = 'success') {
+      let toast = document.querySelector('.toast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-100px);background:#10b981;color:white;padding:12px 24px;border-radius:8px;font-size:14px;opacity:0;transition:all 0.3s;z-index:9999;';
+        document.body.appendChild(toast);
+      }
+      toast.textContent = message;
+      toast.style.background = type === 'error' ? '#ef4444' : '#10b981';
+      toast.style.transform = 'translateX(-50%) translateY(0)';
+      toast.style.opacity = '1';
+      setTimeout(() => {
+        toast.style.transform = 'translateX(-50%) translateY(-100px)';
+        toast.style.opacity = '0';
+      }, 2500);
+    }
+
+    // 筛选按钮
     document.querySelectorAll('.filter-btn').forEach(btn => {
       btn.addEventListener('click', function() {
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         this.classList.add('active');
-        const filter = this.dataset.filter;
-        
-        // 这里可以添加实际的筛选逻辑
-        // 目前只是演示 UI
+        currentCategory = this.dataset.filter;
+        renderProductList();
       });
+    });
+
+    // 排序
+    document.getElementById('sortSelect')?.addEventListener('change', function() {
+      currentSort = this.value;
+      renderProductList();
+    });
+
+    // 用户状态
+    function initUserUI() {
+      const user = API.User.getCurrentUser();
+      const userIcon = document.querySelector('.user-icon');
+      if (user && userIcon) {
+        userIcon.href = '#';
+        userIcon.title = `已登录: ${user.username}`;
+        userIcon.onclick = (e) => {
+          e.preventDefault();
+          if (confirm('是否退出登录？')) {
+            API.User.logout();
+            window.location.reload();
+          }
+        };
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initUserUI();
+      loadProductList();
     });
   </script>
 </body>
