@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>订单详情 - 云商</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <style>
+    .detail-page { padding-top: 100px; min-height: 100vh; background: #f5f5f5; }
+    .detail-container { max-width: 900px; margin: 0 auto; padding: 20px; }
+    .detail-card { background: white; border-radius: 12px; padding: 24px; margin-bottom: 16px; }
+    .detail-card h2 { font-size: 18px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #f3f4f6; }
+    .back-btn { display: inline-flex; align-items: center; gap: 6px; color: #6b7280; text-decoration: none; font-size: 14px; margin-bottom: 20px; }
+    .back-btn:hover { color: var(--primary); }
+    .status-bar { display: flex; align-items: center; gap: 0; margin-bottom: 10px; }
+    .status-step { flex: 1; text-align: center; position: relative; }
+    .status-step::before { content: ''; display: block; width: 32px; height: 32px; border-radius: 50%; background: #e5e7eb; margin: 0 auto 8px; }
+    .status-step.active::before { background: var(--primary); }
+    .status-step.done::before { background: #10b981; }
+    .status-step span { font-size: 12px; color: #6b7280; }
+    .status-step.active span { color: var(--primary); font-weight: 600; }
+    .status-step.done span { color: #10b981; }
+    .status-line { flex: 0.5; height: 2px; background: #e5e7eb; margin-bottom: 28px; }
+    .status-line.done { background: #10b981; }
+    .info-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f9fafb; font-size: 14px; }
+    .info-row:last-child { border-bottom: none; }
+    .info-label { color: #6b7280; min-width: 100px; }
+    .info-value { color: #1f2937; font-weight: 500; text-align: right; }
+    .item-row { display: flex; gap: 15px; padding: 15px 0; border-bottom: 1px solid #f9fafb; }
+    .item-row:last-child { border-bottom: none; }
+    .item-img { width: 80px; height: 80px; border-radius: 8px; overflow: hidden; flex-shrink: 0; background: #f3f4f6; }
+    .item-img img { width: 100%; height: 100%; object-fit: cover; }
+    .item-info { flex: 1; }
+    .item-name { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+    .item-spec { font-size: 12px; color: #6b7280; }
+    .item-right { text-align: right; }
+    .item-price { font-size: 14px; font-weight: 600; color: var(--primary); }
+    .item-qty { font-size: 12px; color: #6b7280; }
+    .amount-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 14px; }
+    .amount-row.total { font-size: 16px; font-weight: 600; border-top: 1px solid #f3f4f6; padding-top: 15px; margin-top: 8px; }
+    .amount-row.total .amount-value { color: var(--primary); font-size: 20px; }
+    .timeline { padding-left: 20px; border-left: 2px solid #e5e7eb; }
+    .timeline-item { position: relative; padding: 0 0 20px 20px; font-size: 13px; }
+    .timeline-item:last-child { padding-bottom: 0; }
+    .timeline-item::before { content: ''; position: absolute; left: -27px; top: 4px; width: 12px; height: 12px; border-radius: 50%; background: #e5e7eb; }
+    .timeline-item.active::before { background: var(--primary); }
+    .timeline-item .time { color: #6b7280; font-size: 12px; margin-top: 4px; }
+    .action-bar { display: flex; gap: 12px; justify-content: flex-end; margin-top: 10px; }
+    .action-bar button, .action-bar a { padding: 10px 28px; border-radius: 8px; border: 1px solid #e5e7eb; background: white; font-size: 14px; cursor: pointer; text-decoration: none; transition: all 0.3s; }
+    .action-bar .btn-primary { background: var(--primary); color: white; border-color: var(--primary); }
+    .action-bar .btn-primary:hover { opacity: 0.9; }
+    .action-bar .btn-danger { color: #ef4444; border-color: #ef4444; }
+    .action-bar .btn-danger:hover { background: #fef2f2; }
+    .loading { text-align: center; padding: 60px; }
+    .loading-spinner { width: 40px; height: 40px; border: 3px solid #f3f4f6; border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: #333; color: white; padding: 12px 24px; border-radius: 8px; font-size: 14px; opacity: 0; transition: all 0.3s; z-index: 9999; }
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    .toast.success { background: #10b981; }
+    .toast.error { background: #ef4444; }
+    .no-data { text-align: center; padding: 60px; color: #6b7280; }
+  </style>
+</head>
+<body>
+  <header class="header" id="header">
+    <div class="container">
+      <div class="header-inner">
+        <a href="index.html" class="logo">云商</a>
+        <nav class="nav" id="nav">
+          <ul class="nav-list">
+            <li><a href="index.html">首页</a></li>
+            <li><a href="products.html">商品列表</a></li>
+            <li><a href="about.html">关于我们</a></li>
+            <li><a href="contact.html">联系我们</a></li>
+          </ul>
+        </nav>
+        <div class="header-actions">
+          <a href="cart.html" class="cart-icon">
+            <svg viewBox="0 0 24 24" width="24" height="24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" fill="none" stroke="currentColor" stroke-width="2"/><line x1="3" y1="6" x2="21" y2="6" stroke="currentColor" stroke-width="2"/><path d="M16 10a4 4 0 01-8 0" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+            <span class="cart-badge" id="cartBadge">0</span>
+          </a>
+          <a href="login.html" class="user-icon" id="userIcon">
+            <svg viewBox="0 0 24 24" width="24" height="24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="7" r="4" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="detail-page">
+    <div class="detail-container">
+      <a href="orders.html" class="back-btn">← 返回订单列表</a>
+      <div id="orderContent">
+        <div class="loading">
+          <div class="loading-spinner"></div>
+          <p>加载中...</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p>&copy; 2026 云商科技 版权所有</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const orderId = urlParams.get('id');
+
+    function checkLogin() {
+      if (!API.User.isLoggedIn()) {
+        showToast('请先登录', 'error');
+        setTimeout(function() { window.location.href = 'login.html'; }, 1500);
+        return false;
+      }
+      var user = API.User.getCurrentUser();
+      var userIcon = document.getElementById('userIcon');
+      if (user && userIcon) {
+        userIcon.href = '#';
+        userIcon.onclick = function(e) {
+          e.preventDefault();
+          if (confirm('是否退出登录？')) { API.User.logout(); window.location.href = 'index.html'; }
+        };
+      }
+      return true;
+    }
+
+    async function loadOrderDetail() {
+      if (!orderId) {
+        document.getElementById('orderContent').innerHTML = '<div class="no-data"><p>订单ID不存在</p></div>';
+        return;
+      }
+      try {
+        var result = await API.Order.getDetail(orderId);
+        if (!result.success) {
+          document.getElementById('orderContent').innerHTML = '<div class="no-data"><p>' + (result.message || '订单不存在') + '</p></div>';
+          return;
+        }
+        renderOrderDetail(result.data);
+      } catch (error) {
+        document.getElementById('orderContent').innerHTML = '<div class="no-data"><p>加载失败，请重试</p></div>';
+      }
+    }
+
+    function renderOrderDetail(order) {
+      var statusSteps = ['pending', 'paid', 'shipped', 'delivered'];
+      var statusLabels = { pending: '待付款', paid: '待发货', shipped: '待收货', delivered: '已完成', cancelled: '已取消' };
+      var currentIdx = order.status === 'cancelled' ? -1 : statusSteps.indexOf(order.status);
+      var addr = order.shipping_address || {};
+      var shippingFee = order.total_amount >= 99 ? 0 : 10;
+      var payAmount = order.total_amount + shippingFee;
+
+      var html = '';
+
+      // 订单状态
+      html += '<div class="detail-card"><h2>订单状态</h2>';
+      if (order.status === 'cancelled') {
+        html += '<div style="text-align:center;padding:10px;"><span style="font-size:24px;">❌</span><p style="font-size:16px;font-weight:600;color:#ef4444;margin-top:8px;">订单已取消</p></div>';
+      } else {
+        html += '<div class="status-bar">';
+        for (var i = 0; i < statusSteps.length; i++) {
+          var cls = i < currentIdx ? 'done' : (i === currentIdx ? 'active' : '');
+          html += '<div class="status-step ' + cls + '"><span>' + statusLabels[statusSteps[i]] + '</span></div>';
+          if (i < statusSteps.length - 1) {
+            html += '<div class="status-line ' + (i < currentIdx ? 'done' : '') + '"></div>';
+          }
+        }
+        html += '</div>';
+      }
+      html += '</div>';
+
+      // 收货信息
+      html += '<div class="detail-card"><h2>收货信息</h2>';
+      html += '<div class="info-row"><span class="info-label">收货人</span><span class="info-value">' + (addr.name || '-') + '</span></div>';
+      html += '<div class="info-row"><span class="info-label">手机号</span><span class="info-value">' + (addr.phone || '-') + '</span></div>';
+      html += '<div class="info-row"><span class="info-label">收货地址</span><span class="info-value">' + (addr.address || '-') + '</span></div>';
+      html += '</div>';
+
+      // 商品清单
+      html += '<div class="detail-card"><h2>商品清单</h2>';
+      var items = order.items || [];
+      for (var j = 0; j < items.length; j++) {
+        var item = items[j];
+        html += '<div class="item-row">';
+        html += '<div class="item-img"><img src="' + (item.image || 'https://via.placeholder.com/80x80?text=No+Image') + '" alt="' + (item.product_name || item.name) + '"></div>';
+        html += '<div class="item-info"><div class="item-name">' + (item.product_name || item.name) + '</div><div class="item-spec">商品ID: ' + item.product_id + '</div></div>';
+        html += '<div class="item-right"><div class="item-price">&yen;' + item.price + '</div><div class="item-qty">x' + item.quantity + '</div></div>';
+        html += '</div>';
+      }
+      html += '<div style="margin-top:15px;padding-top:10px;">';
+      html += '<div class="amount-row"><span>商品金额</span><span>&yen;' + order.total_amount + '</span></div>';
+      html += '<div class="amount-row"><span>运费</span><span>' + (shippingFee === 0 ? '免运费' : '&yen;10.00') + '</span></div>';
+      html += '<div class="amount-row total"><span>实付金额</span><span class="amount-value">&yen;' + payAmount.toFixed(2) + '</span></div>';
+      html += '</div></div>';
+
+      // 订单信息
+      html += '<div class="detail-card"><h2>订单信息</h2>';
+      html += '<div class="info-row"><span class="info-label">订单编号</span><span class="info-value">' + order.id + '</span></div>';
+      html += '<div class="info-row"><span class="info-label">下单时间</span><span class="info-value">' + formatTime(order.created_at) + '</span></div>';
+      if (order.paid_at) html += '<div class="info-row"><span class="info-label">支付时间</span><span class="info-value">' + formatTime(order.paid_at) + '</span></div>';
+      if (order.shipped_at) html += '<div class="info-row"><span class="info-label">发货时间</span><span class="info-value">' + formatTime(order.shipped_at) + '</span></div>';
+      if (order.tracking_number) html += '<div class="info-row"><span class="info-label">物流单号</span><span class="info-value">' + order.tracking_number + (order.carrier ? ' (' + order.carrier + ')' : '') + '</span></div>';
+      if (order.remark) html += '<div class="info-row"><span class="info-label">订单备注</span><span class="info-value">' + order.remark + '</span></div>';
+      html += '</div>';
+
+      // 物流轨迹
+      if (order.tracking_number) {
+        html += '<div class="detail-card"><h2>物流轨迹</h2>';
+        html += '<div class="timeline" id="logisticsTimeline">';
+        html += '<div class="timeline-item active"><div>物流单号: ' + order.tracking_number + '</div><div class="time">点击下方按钮查询详细物流</div></div>';
+        html += '</div>';
+        html += '<div style="margin-top:15px;"><button onclick="queryLogistics(\'' + order.tracking_number + '\', \'' + (order.carrier || '') + '\')" style="padding:8px 20px;border-radius:6px;border:1px solid var(--primary);background:white;color:var(--primary);cursor:pointer;font-size:13px;">查询物流详情</button></div>';
+        html += '</div>';
+      }
+
+      // 操作按钮
+      html += '<div class="detail-card"><div class="action-bar">';
+      if (order.status === 'pending') {
+        html += '<button class="btn-danger" onclick="cancelOrder(\'' + order.id + '\')">取消订单</button>';
+        html += '<button class="btn-primary" onclick="payOrder(\'' + order.id + '\')">立即付款</button>';
+      } else if (order.status === 'shipped') {
+        html += '<button style="padding:10px 28px;border-radius:8px;border:1px solid #e5e7eb;background:white;cursor:pointer;" onclick="queryLogistics(\'' + (order.tracking_number || '') + '\', \'' + (order.carrier || '') + '\')">查看物流</button>';
+        html += '<button class="btn-primary" onclick="confirmReceive(\'' + order.id + '\')">确认收货</button>';
+      } else if (order.status === 'delivered') {
+        html += '<a href="products.html" class="btn-primary" style="display:inline-block;text-align:center;">再次购买</a>';
+      } else if (order.status === 'cancelled') {
+        html += '<a href="products.html" style="padding:10px 28px;border-radius:8px;border:1px solid #e5e7eb;background:white;cursor:pointer;text-decoration:none;color:#333;">重新选购</a>';
+      }
+      html += '</div></div>';
+
+      document.getElementById('orderContent').innerHTML = html;
+    }
+
+    function formatTime(ts) {
+      if (!ts) return '-';
+      try { return new Date(ts + (ts.indexOf('Z') >= 0 || ts.indexOf('+') >= 0 ? '' : 'Z')).toLocaleString('zh-CN'); } catch(e) { return ts; }
+    }
+
+    function payOrder(id) { alert('支付功能开发中，订单号: ' + id); }
+
+    async function cancelOrder(id) {
+      if (!confirm('确定要取消此订单吗？')) return;
+      try {
+        var result = await API.Order.cancel(id);
+        if (result.success) { showToast('订单已取消', 'success'); setTimeout(loadOrderDetail, 1000); }
+        else { showToast(result.message || '取消失败', 'error'); }
+      } catch(e) { showToast('操作失败', 'error'); }
+    }
+
+    async function confirmReceive(id) {
+      if (!confirm('确认已收到商品？')) return;
+      try {
+        var result = await API.Order.confirmReceive(id);
+        if (result.success) { showToast('确认收货成功', 'success'); setTimeout(loadOrderDetail, 1000); }
+        else { showToast(result.message || '操作失败', 'error'); }
+      } catch(e) { showToast('操作失败', 'error'); }
+    }
+
+    async function queryLogistics(trackingNumber, carrier) {
+      if (!trackingNumber) { showToast('暂无物流单号', 'error'); return; }
+      try {
+        var result = await API.Shipping.queryTrack(trackingNumber, carrier);
+        if (result.success && result.data && result.data.traces) {
+          var timeline = document.getElementById('logisticsTimeline');
+          if (timeline) {
+            timeline.innerHTML = result.data.traces.map(function(t) {
+              return '<div class="timeline-item' + (t === result.data.traces[0] ? ' active' : '') + '"><div>' + (t.context || t.desc || t.message) + '</div><div class="time">' + (t.ftime || t.time) + '</div></div>';
+            }).join('');
+          }
+        } else { showToast('物流查询功能开发中', 'error'); }
+      } catch(e) { showToast('物流查询功能开发中', 'error'); }
+    }
+
+    function showToast(message, type) {
+      type = type || 'info';
+      var toast = document.querySelector('.toast');
+      if (!toast) { toast = document.createElement('div'); toast.className = 'toast'; document.body.appendChild(toast); }
+      toast.textContent = message;
+      toast.className = 'toast ' + type + ' show';
+      setTimeout(function() { toast.classList.remove('show'); }, 3000);
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      if (checkLogin()) loadOrderDetail();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>联系我们 - 云商</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <style>
+    .contact-hero { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 100px 0 60px; text-align: center; }
+    .contact-hero h1 { font-size: 42px; margin-bottom: 15px; }
+    .contact-content { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; padding: 60px 0; }
+    .contact-info h3 { font-size: 20px; margin-bottom: 15px; }
+    .contact-info p { color: var(--gray); margin-bottom: 20px; line-height: 1.8; }
+    .contact-method { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+    .contact-method span:first-child { font-size: 24px; }
+    .contact-form h3 { font-size: 20px; margin-bottom: 20px; }
+    .contact-form input, .contact-form textarea { width: 100%; padding: 14px; border: 2px solid var(--border); border-radius: 10px; margin-bottom: 15px; font-size: 14px; }
+    .contact-form textarea { min-height: 120px; resize: vertical; }
+    .contact-form input:focus, .contact-form textarea:focus { border-color: var(--primary); outline: none; }
+    .contact-map { height: 300px; background: var(--light); border-radius: 16px; display: flex; align-items: center; justify-content: center; color: var(--gray); }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <div class="header-inner">
+        <a href="index.html" class="logo">云商</a>
+        <nav class="nav">
+          <ul class="nav-list">
+            <li><a href="index.html">首页</a></li>
+            <li><a href="products.html">商品列表</a></li>
+            <li><a href="category.html">分类</a></li>
+            <li><a href="about.html">关于我们</a></li>
+            <li><a href="contact.html" class="active">联系我们</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <section class="contact-hero">
+    <div class="container">
+      <h1>联系我们</h1>
+      <p>我们随时为您服务</p>
+    </div>
+  </section>
+
+  <div class="container">
+    <div class="contact-content">
+      <div class="contact-info">
+        <h3>联系方式</h3>
+        <p>有任何问题？请通过以下方式联系我们，我们的客服团队将在工作时间内尽快回复您。</p>
+        <div class="contact-method">
+          <span>📞</span>
+          <span>客服热线：400-888-8888</span>
+        </div>
+        <div class="contact-method">
+          <span>📧</span>
+          <span>邮箱：support@yunshang.com</span>
+        </div>
+        <div class="contact-method">
+          <span>⏰</span>
+          <span>工作时间：周一至周日 9:00-21:00</span>
+        </div>
+        <div class="contact-method">
+          <span>📍</span>
+          <span>地址：上海市浦东新区科技园路88号</span>
+        </div>
+        <div class="contact-map">
+          🗺️ 地图区域
+        </div>
+      </div>
+      <div class="contact-form">
+        <h3>在线留言</h3>
+        <form id="contactForm">
+          <input type="text" placeholder="您的姓名" required>
+          <input type="email" placeholder="您的邮箱" required>
+          <input type="tel" placeholder="您的电话">
+          <textarea placeholder="请描述您的问题..." required></textarea>
+          <button type="submit" class="btn btn-primary">提交留言</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p>&copy; 2026 云商科技 版权所有</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      alert('留言已提交，我们会尽快与您联系！');
+      this.reset();
+    });
+  </script>
+</body>
+</html>

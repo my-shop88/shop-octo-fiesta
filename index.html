@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>云商 - 品质生活电商平台</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="icon" href="assets/favicon.ico">
+</head>
+<body>
+  <!-- 顶部导航 -->
+  <header class="header" id="header">
+    <div class="container">
+      <div class="header-inner">
+        <a href="index.html" class="logo">云商</a>
+        <nav class="nav" id="nav">
+          <ul class="nav-list">
+            <li><a href="index.html" class="active">首页</a></li>
+            <li><a href="products.html">商品列表</a></li>
+            <li><a href="category.html">分类</a></li>
+            <li><a href="about.html">关于我们</a></li>
+            <li><a href="contact.html">联系我们</a></li>
+          </ul>
+        </nav>
+        <div class="header-actions">
+          <form class="search-form" action="search.html" method="get">
+            <input type="text" placeholder="搜索商品..." name="q">
+            <button type="submit">
+              <svg viewBox="0 0 24 24" width="20" height="20"><circle cx="11" cy="11" r="8" fill="none" stroke="currentColor" stroke-width="2"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke="currentColor" stroke-width="2"/></svg>
+            </button>
+          </form>
+          <a href="cart.html" class="cart-icon">
+            <svg viewBox="0 0 24 24" width="24" height="24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" fill="none" stroke="currentColor" stroke-width="2"/><line x1="3" y1="6" x2="21" y2="6" stroke="currentColor" stroke-width="2"/><path d="M16 10a4 4 0 01-8 0" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+            <span class="cart-badge" id="cartBadge">0</span>
+          </a>
+          <a href="login.html" class="user-icon">
+            <svg viewBox="0 0 24 24" width="24" height="24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="7" r="4" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+          </a>
+        </div>
+        <button class="mobile-toggle" id="mobileToggle">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 横幅轮播 -->
+  <section class="hero" id="hero">
+    <div class="hero-slider" id="heroSlider">
+      <div class="hero-slide active" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div class="container">
+          <div class="hero-content">
+            <span class="hero-tag">新品上市</span>
+            <h1>春季新品<br>全场8折起</h1>
+            <p>精选好物，品质生活从此刻开始</p>
+            <a href="products.html" class="btn btn-primary">立即选购</a>
+          </div>
+        </div>
+      </div>
+      <div class="hero-slide" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+        <div class="container">
+          <div class="hero-content">
+            <span class="hero-tag">限时特惠</span>
+            <h1>爆款商品<br>限时秒杀</h1>
+            <p>热门好物，优惠多多</p>
+            <a href="products.html?tag=hot" class="btn btn-primary">查看详情</a>
+          </div>
+        </div>
+      </div>
+      <div class="hero-slide" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+        <div class="container">
+          <div class="hero-content">
+            <span class="hero-tag">会员专享</span>
+            <h1>VIP会员日<br>专属优惠</h1>
+            <p>加入会员，享更多特权</p>
+            <a href="login.html" class="btn btn-primary">立即加入</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button class="slider-arrow prev" id="prevSlide">❮</button>
+    <button class="slider-arrow next" id="nextSlide">❯</button>
+    <div class="slider-dots" id="sliderDots"></div>
+  </section>
+
+  <!-- 分类导航 -->
+  <section class="categories">
+    <div class="container">
+      <h2 class="section-title">商品分类</h2>
+      <div class="category-grid" id="categoryGrid">
+        <a href="category.html?cat=electronics" class="category-card">
+          <div class="category-icon">📱</div>
+          <h3>数码电子</h3>
+          <span class="category-count">128件商品</span>
+        </a>
+        <a href="category.html?cat=clothing" class="category-card">
+          <div class="category-icon">👕</div>
+          <h3>服装服饰</h3>
+          <span class="category-count">256件商品</span>
+        </a>
+        <a href="category.html?cat=home" class="category-card">
+          <div class="category-icon">🏠</div>
+          <h3>家居用品</h3>
+          <span class="category-count">89件商品</span>
+        </a>
+        <a href="category.html?cat=food" class="category-card">
+          <div class="category-icon">🍎</div>
+          <h3>食品饮料</h3>
+          <span class="category-count">167件商品</span>
+        </a>
+        <a href="category.html?cat=beauty" class="category-card">
+          <div class="category-icon">💄</div>
+          <h3>美妆护肤</h3>
+          <span class="category-count">94件商品</span>
+        </a>
+        <a href="category.html?cat=sports" class="category-card">
+          <div class="category-icon">⚽</div>
+          <h3>运动户外</h3>
+          <span class="category-count">72件商品</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 热门商品 -->
+  <section class="products-section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">热门推荐</h2>
+        <a href="products.html" class="view-all">查看全部 →</a>
+      </div>
+      <div class="product-grid" id="productGrid"></div>
+    </div>
+  </section>
+
+  <!-- 促销专区 -->
+  <section class="promo-section">
+    <div class="container">
+      <div class="promo-grid">
+        <a href="products.html?tag=discount" class="promo-card promo-large" style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);">
+          <h3>超值折扣</h3>
+          <p>低至3折起</p>
+          <span class="promo-btn">立即抢购</span>
+        </a>
+        <a href="products.html?tag=new" class="promo-card" style="background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);">
+          <h3>新品上市</h3>
+          <p>抢先体验</p>
+        </a>
+        <a href="products.html?tag=bundle" class="promo-card" style="background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);">
+          <h3>套装优惠</h3>
+          <p>买二赠一</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 特色服务 -->
+  <section class="features">
+    <div class="container">
+      <div class="features-grid">
+        <div class="feature-item">
+          <div class="feature-icon">🚚</div>
+          <h4>免费配送</h4>
+          <p>订单满99元免运费</p>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">🛡</div>
+          <h4>正品保证</h4>
+          <p>100%正品，假一赔十</p>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">↩</div>
+          <h4>7天无理由退换</h4>
+          <p>售后无忧，购物放心</p>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">🎁</div>
+          <h4>会员积分</h4>
+          <p>积分抵现，优惠多多</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 品牌展示 -->
+  <section class="brands">
+    <div class="container">
+      <h2 class="section-title">合作品牌</h2>
+      <div class="brand-grid">
+        <div class="brand-item">Apple</div>
+        <div class="brand-item">Samsung</div>
+        <div class="brand-item">Nike</div>
+        <div class="brand-item">Adidas</div>
+        <div class="brand-item">Sony</div>
+        <div class="brand-item">Huawei</div>
+        <div class="brand-item">Xiaomi</div>
+        <div class="brand-item">Dell</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 页脚 -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h4>关于我们</h4>
+          <ul>
+            <li><a href="about.html">公司介绍</a></li>
+            <li><a href="about.html#culture">企业文化</a></li>
+            <li><a href="about.html#team">团队成员</a></li>
+            <li><a href="about.html#careers">加入我们</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>客户服务</h4>
+          <ul>
+            <li><a href="help.html">帮助中心</a></li>
+            <li><a href="shipping.html">配送说明</a></li>
+            <li><a href="return.html">退换政策</a></li>
+            <li><a href="contact.html">联系客服</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>支付方式</h4>
+          <ul>
+            <li><a href="payment.html">支付方式</a></li>
+            <li><a href="coupon.html">优惠券</a></li>
+            <li><a href="points.html">积分商城</a></li>
+            <li><a href="giftcard.html">礼品卡</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>关注我们</h4>
+          <div class="social-links">
+            <a href="#" class="social-icon">📱</a>
+            <a href="#" class="social-icon">💬</a>
+            <a href="#" class="social-icon">📧</a>
+          </div>
+          <p class="footer-contact">客服热线：400-888-8888</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 云商科技版权所有 | <a href="privacy.html">隐私政策</a> | <a href="terms.html">服务条款</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 购物车侧边栏 -->
+  <div class="cart-sidebar" id="cartSidebar">
+    <div class="cart-header">
+      <h3>购物车</h3>
+      <button class="cart-close" id="cartClose">×</button>
+    </div>
+    <div class="cart-items" id="cartItems"></div>
+    <div class="cart-footer">
+      <div class="cart-total">
+        <span>合计：</span>
+        <span id="cartTotal">¥0.00</span>
+      </div>
+      <a href="checkout.html" class="btn btn-primary btn-block">去结算</a>
+    </div>
+  </div>
+  <div class="cart-overlay" id="cartOverlay"></div>
+
+  <!-- 回到顶部 -->
+  <button class="back-to-top" id="backToTop">↑</button>
+
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

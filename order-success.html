@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>下单成功 - 云商</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <style>
+    .success-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+    .success-container { background: white; border-radius: 20px; box-shadow: 0 25px 50px rgba(0,0,0,0.2); width: 100%; max-width: 480px; padding: 50px; text-align: center; }
+    .success-icon { width: 80px; height: 80px; background: #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 25px; font-size: 40px; }
+    .success-container h1 { font-size: 28px; margin-bottom: 10px; color: #1f2937; }
+    .success-container p { color: #6b7280; margin-bottom: 30px; }
+    .order-info { background: #f9fafb; border-radius: 12px; padding: 20px; margin-bottom: 25px; text-align: left; }
+    .order-info-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px; }
+    .order-info-row:last-child { margin-bottom: 0; }
+    .order-info-row span:first-child { color: #6b7280; }
+    .order-info-row span:last-child { font-weight: 500; color: #1f2937; }
+    .success-actions { display: flex; gap: 15px; }
+    .success-actions a { flex: 1; padding: 14px; border-radius: 10px; font-size: 14px; font-weight: 500; text-decoration: none; transition: all 0.3s; }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-secondary { background: #f3f4f6; color: #374151; }
+    .btn-secondary:hover { background: #e5e7eb; }
+  </style>
+</head>
+<body>
+  <div class="success-page">
+    <div class="success-container">
+      <div class="success-icon">✓</div>
+      <h1>下单成功！</h1>
+      <p>感谢您的购买，我们会尽快为您发货</p>
+      
+      <div class="order-info">
+        <div class="order-info-row">
+          <span>订单编号</span>
+          <span id="orderId">-</span>
+        </div>
+        <div class="order-info-row">
+          <span>下单时间</span>
+          <span id="orderTime">-</span>
+        </div>
+        <div class="order-info-row">
+          <span>订单状态</span>
+          <span style="color: #10b981;">待支付</span>
+        </div>
+      </div>
+      
+      <div class="success-actions">
+        <a href="index.html" class="btn-secondary">继续购物</a>
+        <a href="#" class="btn-primary" onclick="goToPay()">立即支付</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script>
+    // 获取订单信息
+    const urlParams = new URLSearchParams(window.location.search);
+    const orderId = urlParams.get('orderId');
+    
+    if (orderId) {
+      document.getElementById('orderId').textContent = orderId;
+      document.getElementById('orderTime').textContent = new Date().toLocaleString('zh-CN');
+    } else {
+      window.location.href = 'index.html';
+    }
+
+    function goToPay() {
+      alert('支付功能开发中，敬请期待！\n\n订单号: ' + orderId);
+    }
+  </script>
+</body>
+</html>
